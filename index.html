@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Knowledge Assistant | Bilingual Excellence</title>
+    <link rel="manifest" href="manifest.json?v=2">
+<link rel="apple-touch-icon" href="icon.png?v=2">
+<link rel="icon" type="image/png" href="icon.png?v=2">
+    <meta name="theme-color" content="#a8a096">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --sha-white: #ffffff;
+            --sha-bg: #f8f7f5;
+            --sha-stone: #a8a096;
+            --sha-gold-muted: #bfa17a;
+            --sha-charcoal: #333333;
+            --sha-gray-light: #e0ddd8;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--sha-bg);
+            color: var(--sha-charcoal);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header { text-align: center; margin-bottom: 40px; margin-top: 20px; }
+        h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; letter-spacing: 4px; font-weight: 400; margin-bottom: 8px; }
+        .line { width: 50px; height: 1px; background-color: var(--sha-gold-muted); margin: 15px auto; }
+        .subtitle { text-transform: uppercase; letter-spacing: 2px; color: var(--sha-stone); font-size: 0.75rem; font-weight: 500; }
+
+        .search-container { width: 100%; max-width: 550px; position: sticky; top: 20px; z-index: 100; }
+        input {
+            width: 100%; padding: 18px 25px; border: 1px solid var(--sha-gray-light); border-radius: 0px;
+            font-size: 1rem; outline: none; background-color: var(--sha-white);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02); transition: all 0.4s ease;
+        }
+        input:focus { border-color: var(--sha-stone); box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
+
+        .results-container { width: 100%; max-width: 600px; margin-top: 40px; }
+        .card {
+            background: var(--sha-white); margin-bottom: 25px; padding: 30px; border: 1px solid transparent;
+            animation: fadeIn 0.6s ease forwards;
+        }
+        .card:hover { border-color: var(--sha-gold-muted); }
+        .category { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--sha-gold-muted); margin-bottom: 15px; font-weight: 600; }
+        .product-header { border-bottom: 1px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 15px; }
+        .name-es { font-family: 'Cinzel', serif; font-size: 1.4rem; display: block; margin-bottom: 5px; }
+        .name-en { font-style: italic; color: var(--sha-stone); font-size: 0.95rem; }
+        .benefits-title { font-size: 0.7rem; text-transform: uppercase; color: var(--sha-stone); margin-bottom: 8px; letter-spacing: 1px; }
+        .benefits-text { font-size: 1rem; line-height: 1.7; color: #555; font-weight: 400; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .no-results { text-align: center; color: var(--sha-stone); margin-top: 60px; font-style: italic; }
+        /* Botón de audio estilo minimalista SHA */
+        .audio-btn {
+            background-color: var(--sha-white);
+            border: 1px solid var(--sha-gray-light);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .audio-btn:hover {
+            border-color: var(--sha-stone);
+            background-color: var(--sha-bg);
+            transform: scale(1.05);
+        }
+
+        .audio-btn:active {
+            transform: scale(0.95);
+            background-color: var(--sha-gray-light);
+        }
+
+        /* Icono dentro del botón */
+        .audio-btn span {
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        /* Contenedor de la fila de nombre e idioma */
+        .name-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Wellness Guide</h1>
+        <div class="line"></div>
+        <div class="subtitle">Bilingual Search | Excellence Service</div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search product or benefit (Detox, Lentils, Miso...)" onkeyup="search()">
+    </div>
+
+    <div id="results" class="results-container"></div>
+
+    <script>
+        // --- Speech synthesis helper: load voices, pick best match, and speak ---
+        let _voices = [];
+        function loadVoices() {
+            _voices = window.speechSynthesis.getVoices() || [];
+            console.debug('voices loaded', _voices.map(v => v.lang + '|' + v.name));
+        }
+        if ('speechSynthesis' in window) {
+            // Some browsers load voices asynchronously
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices();
+        }
+
+        function _chooseVoice(lang) {
+            if (!_voices || !_voices.length) return null;
+            const target = lang === 'en' ? 'en' : 'es';
+            // Prefer exact locale matches, then language-prefix matches, then any voice
+            let v = _voices.find(x => x.lang && x.lang.toLowerCase().startsWith(target + '-'));
+            if (v) return v;
+            v = _voices.find(x => x.lang && x.lang.toLowerCase().startsWith(target));
+            if (v) return v;
+            return _voices[0] || null;
+        }
+
+        function speak(text, lang) {
+            if (!('speechSynthesis' in window)) {
+                console.warn('Speech synthesis not supported in this browser');
+                return;
+            }
+            try {
+                window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = lang === 'en' ? 'en-US' : 'es-ES';
+                msg.rate = 0.95;
+                const voice = _chooseVoice(lang);
+                if (voice) msg.voice = voice;
+                msg.onstart = () => console.debug('speech start', text, msg.lang, msg.voice && msg.voice.name);
+                msg.onend = () => console.debug('speech end');
+                msg.onerror = (e) => console.error('speech error', e);
+                window.speechSynthesis.speak(msg);
+            } catch (err) {
+                console.error('speak() failed', err);
+            }
+        }
+
+        const data = [
+            // --- VEGETABLES, FUNGI & ROOTS ---
+            { cat: "Vegetables", es: "Espinaca", en: "Spinach", info: "Ricas en antioxidantes (luteína y beta-caroteno). / Rich in antioxidants (lutein and beta-carotene)." },
+            { cat: "Vegetables", es: "Col rizada", en: "Kale", info: "Ayuda a reducir marcadores de inflamación. / Helps reduce markers of inflammation." },
+            { cat: "Vegetables", es: "Acelga", en: "Swiss Chard", info: "Alcalinizante y desintoxicante. / Alkalizing and detoxifying." },
+            { cat: "Vegetables", es: "Rúcula", en: "Arugula", info: "Apoya la desintoxicación y el sistema digestivo. / Supports detoxification and the digestive system." },
+            { cat: "Vegetables", es: "Diente de león", en: "Dandelion Greens", info: "Reduce el estrés oxidativo y apoya al hígado. / Reduces oxidative stress and supports the liver." },
+            { cat: "Fungi", es: "Melena de león", en: "Lion's Mane", info: "Resiliencia al estrés y salud cognitiva. / Stress resilience and cognitive health." },
+            { cat: "Fungi", es: "Hongo Shiitake", en: "Shiitake Mushroom", info: "Modulación inmune, integridad intestinal y función hepática. / Immune modulation, gut integrity, and liver function." },
+            { cat: "Roots", es: "Daikon", en: "Daikon Radish", info: "Desintoxicante, antiinflamatorio y favorece la digestión. / Detoxifying, anti-inflammatory, and promotes digestion." },
+            { cat: "Roots", es: "Raíz de loto", en: "Lotus Root", info: "Reduce la inflamación y elimina el 'calor' del cuerpo (MTC). / Reduces inflammation and clears 'body heat' (TCM)." },
+            { cat: "Roots", es: "Betabel", en: "Beet / Beetroot", info: "Rico en polifenoles; equilibrio de glucosa. / High in polyphenols; blood glucose balance." },
+            { cat: "Seaweed", es: "Algas marinas", en: "Seaweed / Sea Veggies", info: "Salud intestinal e inmunológica; ricas en minerales. / Gut and immune health; rich in minerals." },
+
+            // --- LEGUMES  ---
+            { cat: "Legumes", es: "Lentejas", en: "Lentils", info: "Proteína vegetal, hierro y magnesio. / Plant-based protein, iron, and magnesium." },
+            { cat: "Legumes", es: "Garbanzos", en: "Chickpeas", info: "Ricos en zinc y fibra soluble. / Rich in zinc and soluble fiber." },
+            { cat: "Legumes", es: "Frijoles negros", en: "Black Beans", info: "Polifenoles y almidón resistente. / Polyphenols and resistant starch." },
+            { cat: "Legumes", es: "Frijol mungo", en: "Mung Beans", info: "Altamente digestibles y nutritivos. / Highly digestible and nutritious." },
+            { cat: "Legumes", es: "Adzuki", en: "Adzuki Beans", info: "Apoyan la función renal y la microbiota. / Support kidney function and microbiota." },
+
+            // --- GRAINS ---
+            { cat: "Grains", es: "Arroz integral", en: "Brown Rice", info: "Energía estable y fibra. / Stable energy and fiber." },
+            { cat: "Grains", es: "Quinoa", en: "Quinoa", info: "Proteína completa y minerales. / Complete protein and minerals." },
+            { cat: "Grains", es: "Trigo sarraceno", en: "Buckwheat", info: "Libre de gluten y alto en rutina. / Gluten-free and high in rutin." },
+
+            // --- FERMENTED & CONDIMENTS ---
+            { cat: "Condiment", es: "Vinagre de Umeboshi", en: "Umeboshi Vinegar", info: "Combate la fatiga y es antioxidante. / Fights fatigue and acts as an antioxidant." },
+            { cat: "Fermented", es: "Ciruela Umeboshi", en: "Umeboshi Plum", info: "Japonesa, fermentada con sal y shiso. / Japanese plum fermented with salt and shiso leaves." },
+            { cat: "Fermented", es: "Miso", en: "Miso", info: "Pasta de soja fermentada con Aspergillus oryzae. / Traditional Japanese fermented soybean paste." },
+            { cat: "Fermented", es: "Kimchi", en: "Kimchi", info: "Col fermentada con especias (estilo coreano). / Fermented cabbage with spices." },
+            { cat: "Fermented", es: "Chucrut (Sauerkraut)", en: "Sauerkraut", info: "Col fermentada con sal. / Fermented cabbage with salt." },
+            { cat: "Fermented", es: "Ajo negro", en: "Black Garlic", info: "Potente antioxidante; sistema inmune. / Potent antioxidant; immune system." }
+        ];
+
+        function search() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const container = document.getElementById('results');
+            container.innerHTML = '';
+            const filtered = data.filter(item => 
+                item.es.toLowerCase().includes(input) || 
+                item.en.toLowerCase().includes(input) || 
+                item.info.toLowerCase().includes(input) ||
+                item.cat.toLowerCase().includes(input)
+            );
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-results">No results found / No se encontraron resultados.</div>';
+                return;
+            }
+                filtered.forEach(item => {
+                    container.innerHTML += `
+                        <div class="card">
+                            <div class="category">${item.cat}</div>
+                            <div class="product-header">
+                                <span class="name-es" style="font-size: 0.9rem; color: var(--sha-stone); margin-bottom: 8px; display: block;">
+                                    ${item.es}
+                                </span>
+                                <div class="name-row">
+                                    <span class="name-en" style="font-family: 'Cinzel', serif; font-size: 1.3rem; font-style: normal; color: var(--sha-charcoal);">
+                                        ${item.en}
+                                    </span>
+                                    <button class="audio-btn" data-text="${encodeURIComponent(item.en)}" data-lang="en" aria-label="Listen English pronunciation">
+                                        <span>🔊</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="benefits-title">Properties & Benefits / Beneficios</div>
+                            <div class="benefits-text">${item.info}</div>
+                        </div>`;
+                });
+
+                // Attach click handlers to the rendered audio buttons (use data attributes to avoid
+                // quoting issues when names contain apostrophes or quotes)
+                const audioButtons = container.querySelectorAll('.audio-btn');
+                audioButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const text = decodeURIComponent(btn.dataset.text || '');
+                        const lang = btn.dataset.lang || 'en';
+                        if (text) speak(text, lang);
+                    });
+                });
+        }
+        search();
+    </script>
+</body>
+</html>
