@@ -1,0 +1,16 @@
+{
+  "short_name": "KannGuide",
+  "name": "Kann Wellness Guide",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f8f7f5",
+  "theme_color": "#a8a096"
+}
