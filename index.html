@@ -1,6 +1,4 @@
-<script>
-        // --- Speech synthesis helper: load voices, pick best match, and speak ---
-        let _voices = [];
+let _voices = [];
         function loadVoices() {
             _voices = window.speechSynthesis.getVoices() || [];
         }
@@ -35,60 +33,54 @@
         }
 
         const data = [
-            // --- VEGETABLES, FUNGI & ROOTS ---
-            { cat: "Vegetables", es: "Espinaca", en: "Spinach", info: "Ricas en antioxidantes (luteína y beta-caroteno). / Rich in antioxidants (lutein and beta-carotene)." },
-            { cat: "Vegetables", es: "Col rizada", en: "Kale", info: "Ayuda a reducir marcadores de inflamación. / Helps reduce markers of inflammation." },
+            { cat: "Vegetables", es: "Espinaca", en: "Spinach", info: "Ricas en antioxidantes. / Rich in antioxidants." },
+            { cat: "Vegetables", es: "Col rizada", en: "Kale", info: "Ayuda a reducir inflamación. / Helps reduce inflammation." },
             { cat: "Vegetables", es: "Acelga", en: "Swiss Chard", info: "Alcalinizante y desintoxicante. / Alkalizing and detoxifying." },
-            { cat: "Vegetables", es: "Rúcula", en: "Arugula", info: "Apoya la desintoxicación y el sistema digestivo. / Supports detoxification and the digestive system." },
-            { cat: "Vegetables", es: "Diente de león", en: "Dandelion Greens", info: "Reduce el estrés oxidativo y apoya al hígado. / Reduces oxidative stress and supports the liver." },
-            { cat: "Fungi", es: "Melena de león", en: "Lion's Mane", info: "Resiliencia al estrés y salud cognitiva. / Stress resilience and cognitive health." },
-            { cat: "Fungi", es: "Hongo Shiitake", en: "Shiitake Mushroom", info: "Modulación inmune, integridad intestinal y función hepática. / Immune modulation, gut integrity, and liver function." },
-            { cat: "Roots", es: "Daikon", en: "Daikon Radish", info: "Desintoxicante, antiinflamatorio y favorece la digestión. / Detoxifying, anti-inflammatory, and promotes digestion." },
-            { cat: "Roots", es: "Raíz de loto", en: "Lotus Root", info: "Reduce la inflamación y elimina el 'calor' del cuerpo (MTC). / Reduces inflammation and clears 'body heat' (TCM)." },
-            { cat: "Roots", es: "Betabel", en: "Beet / Beetroot", info: "Rico en polifenoles; equilibrio de glucosa. / High in polyphenols; blood glucose balance." },
-            { cat: "Seaweed", es: "Algas marinas", en: "Seaweed / Sea Veggies", info: "Salud intestinal e inmunológica; ricas en minerales. / Gut and immune health; rich in minerals." },
-
-            // --- LEGUMES  ---
-            { cat: "Legumes", es: "Lentejas", en: "Lentils", info: "Proteína vegetal, hierro y magnesio. / Plant-based protein, iron, and magnesium." },
-            { cat: "Legumes", es: "Garbanzos", en: "Chickpeas", info: "Ricos en zinc y fibra soluble. / Rich in zinc and soluble fiber." },
-            { cat: "Legumes", es: "Frijoles negros", en: "Black Beans", info: "Polifenoles y almidón resistente. / Polyphenols and resistant starch." },
-            { cat: "Legumes", es: "Frijol mungo", en: "Mung Beans", info: "Altamente digestibles y nutritivos. / Highly digestible and nutritious." },
-            { cat: "Legumes", es: "Adzuki", en: "Adzuki Beans", info: "Apoyan la función renal y la microbiota. / Support kidney function and microbiota." },
-
-            // --- GRAINS ---
-            { cat: "Grains", es: "Arroz integral", en: "Brown Rice", info: "Energía estable y fibra. / Stable energy and fiber." },
-            { cat: "Grains", es: "Quinoa", en: "Quinoa", info: "Proteína completa y minerales. / Complete protein and minerals." },
-            { cat: "Grains", es: "Trigo sarraceno", en: "Buckwheat", info: "Libre de gluten y alto en rutina. / Gluten-free and high in rutin." },
-
-            // --- FERMENTED & CONDIMENTS ---
-            { cat: "Condiment", es: "Vinagre de Umeboshi", en: "Umeboshi Vinegar", info: "Combate la fatiga y es antioxidante. / Fights fatigue and acts as an antioxidant." },
-            { cat: "Fermented", es: "Ciruela Umeboshi", en: "Umeboshi Plum", info: "Japonesa, fermentada con sal y shiso. / Japanese plum fermented with salt and shiso leaves." },
-            { cat: "Fermented", es: "Miso", en: "Miso", info: "Pasta de soja fermentada con Aspergillus oryzae. / Traditional Japanese fermented soybean paste." },
-            { cat: "Fermented", es: "Kimchi", en: "Kimchi", info: "Col fermentada con especias (estilo coreano). / Fermented cabbage with spices." },
-            { cat: "Fermented", es: "Chucrut (Sauerkraut)", en: "Sauerkraut", info: "Col fermentada con sal. / Fermented cabbage with salt." },
-            { cat: "Fermented", es: "Ajo negro", en: "Black Garlic", info: "Potente antioxidante; sistema inmune. / Potent antioxidant; immune system." },
-
-            // --- MEDICINAL TEAS ---
-            { cat: "Medicinal Teas", es: "Té Kombu", en: "Kombu Tea", info: "Remineralizante, refuerza el sistema nervioso y la función cognitiva. / Remineralizing; strengthens nervous system and cognitive function." },
-            { cat: "Medicinal Teas", es: "Manzana y Kuzu", en: "Apple & Kuzu", info: "Relaja la mente, mejora la función inmunitaria y fortalece el sistema digestivo. / Relaxes the mind, improves immune function, and strengthens the digestive system." },
-            { cat: "Medicinal Teas", es: "Té de Azukis", en: "Azuki Bean Tea", info: "Estimula el sistema urinario; recomendado para fatiga crónica e infecciones. / Stimulates urinary system; recommended for chronic fatigue and infections." },
-            { cat: "Medicinal Teas", es: "Jengibre Limón", en: "Ginger Lemon Tea", info: "Antiinflamatorio, mejora defensas frente a gripe y ayuda en pérdida de peso. / Anti-inflammatory; boosts flu defenses and aids in weight loss." },
-            { cat: "Medicinal Teas", es: "Ume Sho Kuzu", en: "Ume Sho Kuzu", info: "Alivia acidez, gastritis y refuerza el sistema inmunitario. / Relieves heartburn and gastritis; boosts the immune system." },
-            { cat: "Medicinal Teas", es: "Raíz de Loto", en: "Lotus Root Tea", info: "Alivia molestias de garganta y disminuye efectos de sinusitis y asma. / Soothes throat discomfort; reduces effects of sinusitis and asthma." },
-            { cat: "Medicinal Teas", es: "Agar-Agar", en: "Agar-Agar Tea", info: "Fuente de fibra; regula el tránsito intestinal y ayuda en sobrepeso. / Fiber source; regulates intestinal transit and aids in weight loss." },
-            { cat: "Medicinal Teas", es: "Té Mu", en: "Mu Tea", info: "Energético (sin teína); equilibra sistema hormonal y órganos reproductores. / Energy booster; balances hormonal system and reproductive organs." },
-            { cat: "Medicinal Teas", es: "Shiitake deshidratado", en: "Shiitake Tea", info: "Reduce niveles de colesterol y mejora el funcionamiento del hígado. / Reduces cholesterol and improves liver function." },
-            { cat: "Medicinal Teas", es: "Daikon seco", en: "Dried Daikon Tea", info: "Diurético; ayuda a reducir depósitos de grasa corporal. / Diuretic; helps reduce body fat deposits." },
-            { cat: "Medicinal Teas", es: "Verduras dulces", en: "Sweet Vegetable Broth", info: "Regula niveles de glucosa y controla antojos dulces. / Regulates glucose levels and controls sweet cravings." },
-            { cat: "Medicinal Teas", es: "Té de Cebada", en: "Barley Tea", info: "Beneficia hígado y bazo; ayuda a eliminar grasa hepática y visceral. / Benefits liver and spleen; helps eliminate hepatic and visceral fat." },
-            { cat: "Medicinal Teas", es: "Té Kukicha", en: "Kukicha Tea", info: "Rico en calcio y antioxidantes; antiinflamatorio y mejora el proceso digestivo. / Rich in calcium and antioxidants; improves digestion." },
-            { cat: "Medicinal Teas", es: "Té Zanahoria Daikon", en: "Carrot & Daikon Tea", info: "Adecuada para dietas de adelgazamiento y para combatir la celulitis. / Suitable for weight loss diets and combating cellulite." },
-            { cat: "Medicinal Teas", es: "Té Hinojo", en: "Fennel Tea", info: "Alivia digestiones pesadas, cólicos y espasmos gastrointestinales. / Relieves heavy digestion, colic, and gastrointestinal spasms." }
+            { cat: "Vegetables", es: "Rúcula", en: "Arugula", info: "Apoya la desintoxicación. / Supports detoxification." },
+            { cat: "Vegetables", es: "Diente de león", en: "Dandelion Greens", info: "Apoya al hígado. / Supports the liver." },
+            { cat: "Fungi", es: "Melena de león", en: "Lion's Mane", info: "Salud cognitiva. / Cognitive health." },
+            { cat: "Fungi", es: "Hongo Shiitake", en: "Shiitake Mushroom", info: "Modulación inmune. / Immune modulation." },
+            { cat: "Roots", es: "Daikon", en: "Daikon Radish", info: "Favorece la digestión. / Promotes digestion." },
+            { cat: "Roots", es: "Raíz de loto", en: "Lotus Root", info: "Reduce inflamación. / Reduces inflammation." },
+            { cat: "Roots", es: "Betabel", en: "Beet", info: "Equilibrio de glucosa. / Blood glucose balance." },
+            { cat: "Seaweed", es: "Algas marinas", en: "Seaweed", info: "Ricas en minerales. / Rich in minerals." },
+            { cat: "Legumes", es: "Lentejas", en: "Lentils", info: "Proteína vegetal y hierro. / Plant-based protein." },
+            { cat: "Legumes", es: "Garbanzos", en: "Chickpeas", info: "Ricos en zinc y fibra. / Rich in zinc." },
+            { cat: "Legumes", es: "Frijoles negros", en: "Black Beans", info: "Polifenoles. / Polyphenols." },
+            { cat: "Legumes", es: "Frijol mungo", en: "Mung Beans", info: "Altamente digestibles. / Highly digestible." },
+            { cat: "Legumes", es: "Adzuki", en: "Adzuki Beans", info: "Función renal. / Support kidney function." },
+            { cat: "Grains", es: "Arroz integral", en: "Brown Rice", info: "Energía estable. / Stable energy." },
+            { cat: "Grains", es: "Quinoa", en: "Quinoa", info: "Proteína completa. / Complete protein." },
+            { cat: "Grains", es: "Trigo sarraceno", en: "Buckwheat", info: "Libre de gluten. / Gluten-free." },
+            { cat: "Condiment", es: "Vinagre de Umeboshi", en: "Umeboshi Vinegar", info: "Combate la fatiga. / Fights fatigue." },
+            { cat: "Fermented", es: "Ciruela Umeboshi", en: "Umeboshi Plum", info: "Fermentada con sal. / Fermented with salt." },
+            { cat: "Fermented", es: "Miso", en: "Miso", info: "Soja fermentada. / Fermented soybean paste." },
+            { cat: "Fermented", es: "Kimchi", en: "Kimchi", info: "Col fermentada picante. / Fermented cabbage." },
+            { cat: "Fermented", es: "Chucrut", en: "Sauerkraut", info: "Col fermentada con sal. / Fermented cabbage." },
+            { cat: "Fermented", es: "Ajo negro", en: "Black Garlic", info: "Potente antioxidante. / Potent antioxidant." },
+            { cat: "Medicinal Teas", es: "Té Kombu", en: "Kombu Tea", info: "Remineralizante y cognitivo. / Remineralizing and cognitive." },
+            { cat: "Medicinal Teas", es: "Manzana y Kuzu", en: "Apple & Kuzu", info: "Relaja la mente e inmune. / Relaxes mind and immune." },
+            { cat: "Medicinal Teas", es: "Té de Azukis", en: "Azuki Bean Tea", info: "Sistema urinario y fatiga. / Urinary system and fatigue." },
+            { cat: "Medicinal Teas", es: "Jengibre Limón", en: "Ginger Lemon Tea", info: "Antiinflamatorio y defensas. / Anti-inflammatory." },
+            { cat: "Medicinal Teas", es: "Ume Sho Kuzu", en: "Ume Sho Kuzu", info: "Alivia acidez y gastritis. / Relieves heartburn." },
+            { cat: "Medicinal Teas", es: "Raíz de Loto", en: "Lotus Root Tea", info: "Alergias y pulmones. / Allergies and lungs." },
+            { cat: "Medicinal Teas", es: "Agar-Agar", en: "Agar-Agar Tea", info: "Fibra y tránsito intestinal. / Fiber source." },
+            { cat: "Medicinal Teas", es: "Té Mu", en: "Mu Tea", info: "Equilibrio hormonal. / Hormonal balance." },
+            { cat: "Medicinal Teas", es: "Té de Shiitake", en: "Shiitake Tea", info: "Reduce colesterol. / Reduces cholesterol." },
+            { cat: "Medicinal Teas", es: "Daikon seco", en: "Dried Daikon Tea", info: "Diurético y quema grasa. / Diuretic." },
+            { cat: "Medicinal Teas", es: "Verduras dulces", en: "Sweet Vegetable Broth", info: "Regula glucosa. / Regulates glucose." },
+            { cat: "Medicinal Teas", es: "Té de Cebada", en: "Barley Tea", info: "Elimina grasa hepática. / Eliminates hepatic fat." },
+            { cat: "Medicinal Teas", es: "Té Kukicha", en: "Kukicha Tea", info: "Rico en calcio y digestivo. / Rich in calcium." },
+            { cat: "Medicinal Teas", es: "Té Zanahoria Daikon", en: "Carrot & Daikon Tea", info: "Adelgazamiento y celulitis. / Weight loss." },
+            { cat: "Medicinal Teas", es: "Té Hinojo", en: "Fennel Tea", info: "Alivia digestiones pesadas. / Relieves heavy digestion." }
         ];
 
         function search() {
-            const input = document.getElementById('searchInput').value.toLowerCase();
+            const inputElement = document.getElementById('searchInput');
+            if (!inputElement) return;
+            const input = inputElement.value.toLowerCase();
             const container = document.getElementById('results');
+            if (!container) return;
             container.innerHTML = '';
             const filtered = data.filter(item => 
                 item.es.toLowerCase().includes(input) || 
@@ -105,31 +97,27 @@
                     <div class="card">
                         <div class="category">${item.cat}</div>
                         <div class="product-header">
-                            <span class="name-es" style="font-size: 0.9rem; color: var(--sha-stone); margin-bottom: 8px; display: block;">
-                                ${item.es}
-                            </span>
+                            <span class="name-es" style="font-size: 0.9rem; color: var(--sha-stone); margin-bottom: 8px; display: block;">${item.es}</span>
                             <div class="name-row">
-                                <span class="name-en" style="font-family: 'Cinzel', serif; font-size: 1.3rem; font-style: normal; color: var(--sha-charcoal);">
-                                    ${item.en}
-                                </span>
-                                <button class="audio-btn" data-text="${encodeURIComponent(item.en)}" data-lang="en" aria-label="Listen English pronunciation">
-                                    <span>🔊</span>
-                                </button>
+                                <span class="name-en" style="font-family: 'Cinzel', serif; font-size: 1.3rem; font-style: normal; color: var(--sha-charcoal);">${item.en}</span>
+                                <button class="audio-btn" data-text="${encodeURIComponent(item.en)}" data-lang="en"><span>🔊</span></button>
                             </div>
                         </div>
                         <div class="benefits-title">Properties & Benefits / Beneficios</div>
                         <div class="benefits-text">${item.info}</div>
                     </div>`;
             });
-
             const audioButtons = container.querySelectorAll('.audio-btn');
             audioButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const text = decodeURIComponent(btn.dataset.text || '');
-                    const lang = btn.dataset.lang || 'en';
-                    if (text) speak(text, lang);
+                    speak(text, 'en');
                 });
             });
         }
-        search();
+        // Esta línea asegura que la lista se muestre apenas abra la app
+        window.onload = search;
     </script>
+</body>
+</html>
+        
