@@ -60,12 +60,17 @@
             search();
         }
         function speak(text) {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'en-US'; 
-            msg.rate = 0.9;
-            window.speechSynthesis.speak(msg);
-        }
+    if (!text) return; 
+    window.speechSynthesis.cancel();
+    
+    // 
+    const cleanText = text.replace(/[‘’]/g, "'"); 
+    
+    const msg = new SpeechSynthesisUtterance(cleanText);
+    msg.lang = 'en-US'; 
+    msg.rate = 0.85; 
+    window.speechSynthesis.speak(msg);
+}
 
         const data = [
             // --- VEGETABLES ---
@@ -77,9 +82,8 @@
             { cat: "Vegetables", mx: "Diente de león", es: "Diente de león", en: "Dandelion Greens", infoMX: "Apoya la función del hígado. / Supports the liver.", infoES: "Apoya la función del hígado. / Supports the liver." },
 
             // --- FUNGI ---
-            { cat: "Fungi", mx: "Melena de león", es: "Melena de león", en: "Lion's Mane", infoMX: "Resiliencia al estrés y salud cognitiva. / Stress resilience and cognitive health.", infoES: "Resiliencia al estrés y salud cognitiva. / Stress resilience and cognitive health." },
-            { cat: "Fungi", mx: "Hongo Shiitake", es: "Shiitake", en: "Shiitake Mushroom", infoMX: "Modulación inmune, integridad intestinal y función hepática. / Immune modulation, gut integrity, and liver function.", infoES: "Modulación inmune, integridad intestinal y función del hígado. / Immune modulation, gut integrity, and liver function." },
-
+            { cat: "Fungi", mx: "Melena de león", es: "Melena de león", en: "Lions Mane", infoMX: "Resiliencia al estrés y salud cognitiva. / Stress resilience and cognitive health.", infoES: "Resiliencia al estrés y salud cognitiva. / Stress resilience and cognitive health." },
+{ cat: "Fungi", mx: "Hongo Shiitake", es: "Shiitake", en: "Shiitake Mushroom", infoMX: "Modulación inmune, integridad intestinal y función hepática. / Immune modulation and liver function.", infoES: "Modulación inmune, integridad intestinal y función del hígado. / Immune modulation and liver function." },
             // --- ROOTS ---
             { cat: "Roots", mx: "Daikon", es: "Daikon", en: "Daikon Radish", infoMX: "Desintoxicante, antiinflamatorio y favorece la digestión. / Detoxifying, anti-inflammatory, and promotes digestion.", infoES: "Depurativo, antiinflamatorio y favorece la digestión. / Detoxifying, anti-inflammatory, and promotes digestion." },
             { cat: "Roots", mx: "Raíz de loto", es: "Raíz de loto", en: "Lotus Root", infoMX: "Reduce la inflamación y elimina el 'calor' del cuerpo. / Reduces inflammation and clears 'body heat' from the body.", infoES: "Reduce la inflamación y elimina el 'calor' del cuerpo. / Reduces inflammation and clears 'body heat' from the body." },
@@ -188,7 +192,7 @@
                 container.innerHTML = '<div class="no-results">No se encontraron resultados / No results found.</div>';
                 return;
             }
-            filtered.forEach(item => {
+           filtered.forEach(item => {
                 const name = currentRegion === 'mx' ? item.mx : item.es;
                 const info = currentRegion === 'mx' ? item.infoMX : item.infoES;
                 container.innerHTML += `
@@ -198,14 +202,15 @@
                             <span style="font-size: 0.9rem; color: var(--sha-stone); display: block; margin-bottom: 8px;">${name}</span>
                             <div class="name-row">
                                 <span class="name-en">${item.en}</span>
-                                <button class="audio-btn" onclick="speak('${item.en}')"><span>🔊</span></button>
+                                <button class="audio-btn" onclick="speak(\`${item.en.replace(/'/g, "\\'")}\`)"><span>🔊</span></button>
                             </div>
                         </div>
                         <div class="benefits-title">Beneficios / Benefits</div>
                         <div class="benefits-text">${info}</div>
                     </div>`;
-            });
-        }
+            }); // Cierra el forEach
+        } // Cierra la función search
+
         window.onload = search;
     </script>
 </body>
